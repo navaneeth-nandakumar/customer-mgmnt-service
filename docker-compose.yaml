@@ -1,4 +1,4 @@
-version: "1"
+version: "3"
 services:
   mysqldb:
     container_name: mysqldb
@@ -12,7 +12,6 @@ services:
     image: completese/customer-mgmnt-svc
     ports:
       - "8080:8080"
-    restart: always
     depends_on:
       - mysqldb
     environment:

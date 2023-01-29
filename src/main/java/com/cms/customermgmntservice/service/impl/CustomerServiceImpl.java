@@ -2,6 +2,7 @@ package com.cms.customermgmntservice.service.impl;
 
 import com.cms.customermgmntservice.dto.CustomerDto;
 import com.cms.customermgmntservice.entity.Customer;
+import com.cms.customermgmntservice.logging.Loggable;
 import com.cms.customermgmntservice.repository.CustomerRepository;
 import com.cms.customermgmntservice.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,26 +18,31 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerRepository customerRepository;
 
     @Override
+    @Loggable
     public List<CustomerDto> getCustomers() {
         return customerRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     @Override
+    @Loggable
     public CustomerDto getCustomerById(Long id) {
         return customerRepository.findById(id).map(this::convertToDto).orElse(null);
     }
 
     @Override
+    @Loggable
     public CustomerDto addCustomer(CustomerDto customer) {
         return convertToDto(customerRepository.save(convertToEntity(customer)));
     }
 
     @Override
+    @Loggable
     public CustomerDto updateCustomer(CustomerDto customerDto) {
         return addCustomer(customerDto);
     }
 
     @Override
+    @Loggable
     public void deleteCustomerById(Long id) {
         customerRepository.deleteById(id);
     }
