@@ -1,6 +1,6 @@
 package com.cms.customermgmntservice.dto;
 
-public class CustomerDto {
+public class CustomerDTO {
 
     private Long id;
     private String name;

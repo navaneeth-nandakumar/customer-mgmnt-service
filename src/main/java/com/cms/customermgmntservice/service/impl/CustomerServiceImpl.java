@@ -1,7 +1,10 @@
 package com.cms.customermgmntservice.service.impl;
 
-import com.cms.customermgmntservice.dto.CustomerDto;
+import com.cms.customermgmntservice.dto.CustomerDTO;
+import com.cms.customermgmntservice.dto.CustomerDTOMapper;
 import com.cms.customermgmntservice.entity.Customer;
+import com.cms.customermgmntservice.entity.CustomerEntityMapper;
+import com.cms.customermgmntservice.exception.ResourceNotFoundException;
 import com.cms.customermgmntservice.logging.Loggable;
 import com.cms.customermgmntservice.repository.CustomerRepository;
 import com.cms.customermgmntservice.service.CustomerService;
@@ -17,53 +20,46 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private CustomerDTOMapper customerDTOMapper;
+
+    @Autowired
+    private CustomerEntityMapper customerEntityMapper;
+
     @Override
     @Loggable
-    public List<CustomerDto> getCustomers() {
-        return customerRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
+    public List<CustomerDTO> getCustomers() {
+        return customerRepository.findAll().stream().map(customerDTOMapper).collect(Collectors.toList());
     }
 
     @Override
     @Loggable
-    public CustomerDto getCustomerById(Long id) {
-        return customerRepository.findById(id).map(this::convertToDto).orElse(null);
+    public CustomerDTO getCustomerById(Long id) {
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer Not Found"));
+        return customerDTOMapper.apply(customer);
     }
 
     @Override
     @Loggable
-    public CustomerDto addCustomer(CustomerDto customer) {
-        return convertToDto(customerRepository.save(convertToEntity(customer)));
+    public CustomerDTO addCustomer(CustomerDTO customer) {
+        Customer savedCustomer = customerRepository.save(customerEntityMapper.apply(customer));
+        return customerDTOMapper.apply(savedCustomer);
     }
 
     @Override
     @Loggable
-    public CustomerDto updateCustomer(CustomerDto customerDto) {
+    public CustomerDTO updateCustomer(CustomerDTO customerDto) {
+        Customer customer = customerRepository.findById(customerDto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Customer Not Found"));
         return addCustomer(customerDto);
     }
 
     @Override
     @Loggable
     public void deleteCustomerById(Long id) {
-        customerRepository.deleteById(id);
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer Not Found"));
+        customerRepository.delete(customer);
     }
 
-    private CustomerDto convertToDto(Customer customer) {
-        CustomerDto customerDto = new CustomerDto();
-        customerDto.setId(customer.getId());
-        customerDto.setAddress(customer.getAddress());
-        customerDto.setName(customer.getName());
-        customerDto.setEmail(customer.getEmail());
-        customerDto.setPhoneNumber(customer.getPhoneNumber());
-        return customerDto;
-    }
-
-    private Customer convertToEntity(CustomerDto customerDto) {
-        Customer customer = new Customer();
-        customer.setId(customerDto.getId());
-        customer.setAddress(customerDto.getAddress());
-        customer.setName(customerDto.getName());
-        customer.setEmail(customerDto.getEmail());
-        customer.setPhoneNumber(customerDto.getPhoneNumber());
-        return customer;
-    }
 }

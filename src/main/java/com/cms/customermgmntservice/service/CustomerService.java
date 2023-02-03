@@ -1,18 +1,18 @@
 package com.cms.customermgmntservice.service;
 
-import com.cms.customermgmntservice.dto.CustomerDto;
+import com.cms.customermgmntservice.dto.CustomerDTO;
 
 import java.util.List;
 
 public interface CustomerService {
 
-    List<CustomerDto> getCustomers();
+    List<CustomerDTO> getCustomers();
 
-    CustomerDto getCustomerById(Long id);
+    CustomerDTO getCustomerById(Long id);
 
-    CustomerDto addCustomer(CustomerDto customer);
+    CustomerDTO addCustomer(CustomerDTO customer);
 
-    CustomerDto updateCustomer(CustomerDto customer);
+    CustomerDTO updateCustomer(CustomerDTO customer);
 
     void deleteCustomerById(Long id);
 }

@@ -1,4 +1,8 @@
 package com.cms.customermgmntservice.exception;
 
-public class CustomerNotFoundException extends RuntimeException{
+public class ResourceNotFoundException extends RuntimeException{
+
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
 }

@@ -1,11 +1,14 @@
 package com.cms.customermgmntservice.controller;
 
-import com.cms.customermgmntservice.dto.CustomerDto;
+import com.cms.customermgmntservice.dto.CustomerDTO;
 import com.cms.customermgmntservice.logging.Loggable;
 import com.cms.customermgmntservice.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -21,32 +24,36 @@ public class CustomerController {
 
     @GetMapping
     @Loggable
-    public List<CustomerDto> getCustomers() {
+    public List<CustomerDTO> getCustomers() {
         return customerService.getCustomers();
     }
 
     @GetMapping("/{id}")
     @Loggable
-    public CustomerDto getCustomerById(@PathVariable Long id) {
+    public CustomerDTO getCustomerById(@PathVariable Long id) {
         return customerService.getCustomerById(id);
     }
 
     @PostMapping
     @Loggable
-    public CustomerDto addCustomer(@RequestBody CustomerDto customerDto) {
-        return customerService.addCustomer(customerDto);
+    public ResponseEntity<CustomerDTO> saveCustomer(@RequestBody CustomerDTO customerDto, UriComponentsBuilder ucb) {
+        CustomerDTO customer = customerService.addCustomer(customerDto);
+        URI location = ucb.path("/customers/")
+                .path(String.valueOf(customer.getId()))
+                .build().toUri();
+        return ResponseEntity.created(location).body(customer);
     }
 
     @PutMapping("/{id}")
     @Loggable
-    public CustomerDto updateCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
+    public CustomerDTO updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDto) {
         customerDto.setId(id);
         return customerService.updateCustomer(customerDto);
     }
 
     @DeleteMapping("/{id}")
     @Loggable
-    public void deleteCustomerById(@PathVariable Long id) {
+    public void deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomerById(id);
     }
 
